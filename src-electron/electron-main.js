@@ -4,6 +4,8 @@ import path from 'path'
 import os from 'os'
 import dgram from 'dgram'
 
+import db from './db'
+
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform()
 
@@ -104,4 +106,13 @@ function sendCommand (cmd) {
 
 ipcMain.on('onRequest', (event, data) => {
   sendCommand(data)
+})
+
+ipcMain.on('getSetup', async (event) => {
+  const r = await db.setup.find()
+  mainWindow.webContents.send('rtSetup', r)
+})
+
+ipcMain.on('setSetup', async (event, data) => {
+  await db.setup.update({ key: data.key }, { $set: { value: data.value } }, { upsert: true })
 })

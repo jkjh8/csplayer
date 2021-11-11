@@ -28,3 +28,18 @@ contextBridge.exposeInMainWorld('data', {
     })
   }
 })
+
+contextBridge.exposeInMainWorld('db', {
+  get: () => {
+    console.log('get db')
+    ipcRenderer.send('getSetup')
+  },
+  set: (data) => {
+    ipcRenderer.send('setSetup', data)
+  },
+  return: (fn) => {
+    ipcRenderer.on('rtSetup', (e, ...args) => {
+      fn(...args)
+    })
+  }
+})
